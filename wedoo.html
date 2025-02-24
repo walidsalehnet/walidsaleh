@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEDOO NET</title>
+
+    <!-- ✅ تحميل الخطوط والأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ✅ إعدادات الصفحة العامة */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ✅ أنيميشن اسم الموقع */
+        .logo {
+            font-size: clamp(30px, 5vw, 50px);
+            font-weight: bold;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards, glow 2s infinite alternate;
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 81, 47, 0.8);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(221, 36, 118, 0.9);
+            }
+        }
+
+        /* ✅ تنسيق الأقسام */
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .section:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .section img {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .section h2 {
+            margin: 15px 0;
+            font-size: clamp(18px, 2vw, 22px);
+        }
+
+        /* ✅ زر الدخول */
+        .section button {
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: clamp(14px, 1.5vw, 16px);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .section button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px rgba(255, 81, 47, 0.6);
+        }
+
+        /* ✅ تحسين التناسق مع الشاشات الصغيرة */
+        @media (max-width: 600px) {
+            .sections {
+                grid-template-columns: 1fr;
+            }
+            .logo {
+                font-size: 40px;
+            }
+            .section img {
+                max-height: 150px;
+            }
+            .section h2 {
+                font-size: 18px;
+            }
+            .section button {
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+   
+    <!-- ✅ اسم الموقع بانميشن -->
+    <div class="logo">WEDOO NET</div>
+
+    <!-- ✅ الأقسام -->
+    <div class="sections">
+        <div class="section">
+            <img src=" https://k.top4top.io/p_33395334x1.jpeg" alt="باقات فليكس">
+            <h2>باقات فليكس</h2>
+            <button onclick="location.href='flex2.html'">دخول</button>
+        </div>
+
+        <div class="section">
+            <img src="https://c.top4top.io/p_333944fzq1.png" alt="باقات بيزنس">
+            <h2>باقات بيزنس</h2>
+            <button onclick="location.href='292.html'">دخول</button>
+        </div>
+
+        <div class="section">
+            <img src="https://k.top4top.io/p_334018drd1.jpeg" alt="باقات ريد">
+            <h2>خدمات فودافون اخري </h2>
+            <button onclick="location.href='other2.html'">دخول</button>
+        </div>
+    </div>
+
+</body>
+</html>

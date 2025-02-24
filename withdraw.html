@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 سحب الرصيد من المحفظة</title>
+
+    <!-- ✅ تحميل Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        // ✅ تكوين Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+            authDomain: "noproblem-55b97.firebaseapp.com",
+            projectId: "noproblem-55b97",
+            storageBucket: "noproblem-55b97.firebasestorage.app",
+            messagingSenderId: "316010224446",
+            appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
+            measurementId: "G-VKSGWBRKVL"
+        };
+
+        // ✅ تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+    </script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
+            font-family: 'Cairo', sans-serif;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a4a4a, #2e2e2e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .message-box {
+            width: 90%;
+            max-width: 450px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .table-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        table {
+            width: 90%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid white;
+            text-align: center;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>💰 سحب الرصيد</h1>
+
+        <label>📲 رقم الهاتف للسحب:</label>
+        <input type="tel" id="withdrawNumber" placeholder="أدخل رقم الهاتف الذي تريد السحب إليه">
+
+        <label>📞 رقم واتساب للتواصل:</label>
+        <input type="tel" id="whatsappNumber" placeholder="أدخل رقم الواتساب">
+
+        <label>💰 المبلغ:</label>
+        <input type="number" id="amount" placeholder="أدخل المبلغ المطلوب سحبه">
+
+        <button class="button" onclick="submitWithdraw()">⚡ تأكيد السحب</button>
+    </div>
+
+    <div id="messageBox" class="message-box"></div>
+
+    <h2>📋 سجل عمليات السحب</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>رقم الطلب</th>
+                    <th>رقم السحب</th>
+                    <th>رقم الواتساب</th>
+                    <th>المبلغ</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function fetchOrders() {
+            const ordersTable = document.getElementById("ordersTable");
+            ordersTable.innerHTML = "";
+
+            db.collection("withdrawals").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+                ordersTable.innerHTML = ""; 
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    ordersTable.innerHTML += `
+                        <tr>
+                            <td>${data.orderId}</td>
+                            <td>${data.withdrawNumber}</td>
+                            <td>${data.whatsappNumber}</td>
+                            <td>${data.amount} جنيه</td>
+                            <td>${data.status || "قيد التنفيذ"}</td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        function submitWithdraw() {
+    const withdrawNumber = document.getElementById("withdrawNumber").value;
+    const whatsappNumber = document.getElementById("whatsappNumber").value;
+    const amount = parseFloat(document.getElementById("amount").value);
+    const orderId = Math.floor(100000 + Math.random() * 900000);
+
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+            const userRef = db.collection("users").doc(user.uid);
+
+            userRef.get().then(doc => {
+                if (doc.exists) {
+                    let walletBalance = doc.data().wallet || 0;
+                    let email = doc.data().email || "غير متوفر";
+
+                    if (amount > walletBalance) {
+                        showMessage(`❌ المبلغ المتوفر للسحب هو ${walletBalance} جنيه فقط!`, "red");
+                        return; // لا يتم تنفيذ الطلب
+                    }
+
+                    // خصم المبلغ من المحفظة
+                    userRef.update({ wallet: walletBalance - amount }).then(() => {
+                        db.collection("withdrawals").doc(orderId.toString()).set({
+                            orderId: orderId,
+                            userId: user.uid,
+                            withdrawNumber: withdrawNumber,
+                            whatsappNumber: whatsappNumber,
+                            amount: amount,
+                            email: email,
+                            status: "قيد التنفيذ",
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            showMessage("✅ تم تقديم طلب السحب بنجاح!", "green");
+                            sendToTelegram(orderId, withdrawNumber, whatsappNumber, amount, email);
+                            fetchWithdrawHistory();
+                        });
+                    });
+                }
+            });
+        }
+    });
+}
+
+        function sendToTelegram(orderId, withdrawNumber, whatsappNumber, amount, email) {
+    let message = `📢 طلب سحب جديد 📢\n\n`
+        + `🆔 *رقم الطلب:* ${orderId}\n`
+        + `📲 *رقم السحب:* ${withdrawNumber}\n`
+        + `📞 *واتساب:* ${whatsappNumber}\n`
+        + `💰 *المبلغ:* ${amount} جنيه\n`
+        + `✉️ *الإيميل:* ${email}`;
+
+    let botToken = "7530408766:AAEUX0E23stHx_MUsKbnaGFr1V61IixFX78";
+    let chatId = "6798744902";
+    
+    let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                showMessage("✅ تم إرسال الطلب إلى تيليجرام بنجاح!", "green");
+            } else {
+                showMessage("❌ فشل إرسال الطلب إلى تيليجرام!", "red");
+                console.error("Telegram Error:", data);
+            }
+        })
+        .catch(error => {
+            showMessage("❌ خطأ أثناء إرسال الطلب!", "red");
+            console.error("Fetch Error:", error);
+        });
+}
+
+
+        function showMessage(msg, color) {
+            const box = document.getElementById("messageBox");
+            box.innerText = msg;
+            box.style.background = color;
+            box.style.display = "block";
+            setTimeout(() => { box.style.display = "none"; }, 4000);
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchOrders);
+    </script>
+
+</body>
+</html>

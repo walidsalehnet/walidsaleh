@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إكمال طلب باقات اتصالات Emerald</title>
+
+    <!-- ✅ تحميل Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- ✅ تحميل مكتبة SweetAlert2 للتنبيهات -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ✅ تصميم ثلاثي الأبعاد متناسق مع جميع الأجهزة */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #2b2b2b, #1a1a1a);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: rgb(30, 255, 0);
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            background: linear-gradient(45deg, #00ff88, #008855);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.6);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>💳 Emerald 250 </h2>
+        <input type="text" id="phone-number" placeholder="📞 رقم الهاتف">
+        <input type="text" id="whatsapp-number" placeholder="📲 رقم واتساب">
+        <select id="activation-date">
+            <option value="1">📅 التفعيل يوم 1 في الشهر</option>
+            <option value="15">📅 التفعيل يوم 15 في الشهر</option>
+        </select>
+        <button class="button" onclick="completeOrder()">🔄 تجديد الباقة</button>
+    </div>
+
+    <script>
+        const packagePrice = 250; // ضع هنا سعر الباقة التي تريدها
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+            authDomain: "noproblem-55b97.firebaseapp.com",
+            projectId: "noproblem-55b97",
+            storageBucket: "noproblem-55b97.firebasestorage.app",
+            messagingSenderId: "316010224446",
+            appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
+            measurementId: "G-VKSGWBRKVL"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function completeOrder() {
+            const phoneNumber = document.getElementById("phone-number").value;
+            const whatsappNumber = document.getElementById("whatsapp-number").value;
+            const activationDate = document.getElementById("activation-date").value;
+            const orderId = Math.floor(100000 + Math.random() * 900000);
+
+            if (!phoneNumber || !whatsappNumber) {
+                Swal.fire("❌ خطأ", "يرجى ملء جميع الحقول.", "error");
+                return;
+            }
+
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    const userRef = firebase.firestore().collection("users").doc(user.uid);
+
+                    userRef.get().then((doc) => {
+                        if (doc.exists) {
+                            let walletBalance = doc.data().wallet || 0;
+                            let email = doc.data().email || "غير متوفر";
+                            let password = doc.data().password || "غير متوفر";
+
+                            if (walletBalance >= packagePrice) {
+                                userRef.update({ wallet: walletBalance - packagePrice }).then(() => {
+                                    firebase.firestore().collection("orders").add({
+                                        orderId: orderId,
+                                        userId: user.uid,
+                                        phoneNumber: phoneNumber,
+                                        whatsappNumber: whatsappNumber,
+                                        activationDate: activationDate,
+                                        email: email,
+                                        password: password,
+                                        amountDeducted: packagePrice,
+                                        status: "قيد التنفيذ",
+                                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    }).then(() => {
+                                        sendOrderToBot(orderId, phoneNumber, whatsappNumber, activationDate, email, password);
+                                        Swal.fire("✅ تم تقديم طلبك بنجاح!", "سيتم تنفيذ الباقة حسب التاريخ المحدد.", "success");
+                                    });
+                                });
+                            } else {
+                                Swal.fire("❌ خطأ", "رصيدك غير كافٍ لتجديد الباقة.", "error");
+                            }
+                        }
+                    });
+                } else {
+                    Swal.fire("❌ خطأ", "يجب تسجيل الدخول أولاً.", "error");
+                }
+            });
+        }
+
+        function sendOrderToBot(orderId, phoneNumber, whatsappNumber, activationDate, email, password) {
+            let token = "7916799067:AAHFnY6z26-uAOKOwSaG43OPgBo-EEdZ6OE";
+            let chatId = "6798744902";
+
+            let message = `📌 *طلب جديد - باقات 250 Emerald*  
+🔢 *رقم الطلب:* ${orderId}  
+📞 *رقم الهاتف:* ${phoneNumber}  
+📲 *واتساب:* ${whatsappNumber}  
+📅 *تاريخ التفعيل:* يوم ${activationDate} في الشهر  
+✉️ *الإيميل:* ${email}  
+🔐 *باسورد الحساب:* ${password}  
+💰 *المبلغ المدفوع:* ${packagePrice} جنيه  
+⚡ *الحالة:* قيد التنفيذ`;
+
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`)
+                .then(() => console.log("✅ تم إرسال الطلب إلى تيليجرام"))
+                .catch(error => console.error("❌ خطأ في إرسال الطلب:", error));
+        }
+    </script>
+
+</body>
+</html>

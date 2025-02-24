@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قسم التجار</title>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #333;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            font-size: 18px;
+            text-align: center;
+            border-left: 7px solid #ffcc00;
+            line-height: 1.8;
+        }
+
+        .button-container {
+            margin-top: 15px;
+        }
+
+        .whatsapp-button {
+            display: inline-block;
+            padding: 12px 25px;
+            font-size: 18px;
+            color: white;
+            background: #25D366;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .whatsapp-button:hover {
+            background: #1EBE57;
+        }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: #ffcc00;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #ff9900;
+        }
+
+        /* ✅ تصميم مستطيلات الرسائل */
+        .message-box {
+            width: 80%;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+
+        .message-box.success {
+            background: #4CAF50;
+            color: white;
+            border-left: 5px solid #2E7D32;
+        }
+
+        .message-box.error {
+            background: #F44336;
+            color: white;
+            border-left: 5px solid #B71C1C;
+        }
+
+        .message-box.info {
+            background: #2196F3;
+            color: white;
+            border-left: 5px solid #0D47A1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+
+    <!-- ✅ تحميل Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+       const firebaseConfig = {
+            apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+            authDomain: "noproblem-55b97.firebaseapp.com",
+            projectId: "noproblem-55b97",
+            storageBucket: "noproblem-55b97.firebasestorage.app",
+            messagingSenderId: "316010224446",
+            appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
+            measurementId: "G-VKSGWBRKVL"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function sendToWhatsApp() {
+            const message = encodeURIComponent("مرحبًا، أريد إنشاء قسيمة دخول لقسم التجار.");
+            window.location.href = `https://wa.me/201097891442?text=${message}`;
+        }
+        function showMessage(type, text) {
+            const messageBox = document.getElementById("messageBox");
+            messageBox.className = `message-box ${type}`;
+            messageBox.innerText = text;
+            messageBox.classList.remove("hidden");
+
+            setTimeout(() => {
+                messageBox.classList.add("hidden");
+            }, 5000);
+        }
+
+        function checkAccess() {
+            const userCode = document.getElementById("codeInput").value;
+
+            if (!userCode) {
+                showMessage("error", "❌ يجب إدخال القسيمة للمتابعة.");
+                return;
+            }
+
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    const userEmail = user.email;
+
+                    db.collection("trader_codes")
+                        .doc(userEmail)
+                        .get()
+                        .then(doc => {
+                            if (doc.exists && doc.data().code === userCode) {
+                                showMessage("success", "✅ تم التحقق من القسيمة بنجاح! يتم تحويلك الآن...");
+                                setTimeout(() => {
+                                    window.location.href = "wedoo.html";
+                                }, 2000);
+                            } else {
+                                showMessage("error", "❌ القسيمة غير صحيحة أو غير مسجلة لهذا المستخدم.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("خطأ في التحقق من القسيمة:", error);
+                            showMessage("error", "❌ حدث خطأ أثناء التحقق. حاول مرة أخرى.");
+                        });
+                } else {
+                    showMessage("info", "❌ يجب تسجيل الدخول أولًا.");
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 2000);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>🔒 قسم التجار</h1>
+  <!-- ✅ رسالة القسم -->
+  <div class="info-box">
+    📢 <b>بص ي صديقي:</b> القسم ده خاص بتجار فودافون فقط، يعني هتقدر تبيع منه باقات فودافون فليكس وبيزنس وخصم ورصيد بعض الخدمات بتاعت فودافون فقط،ومفيش باقات تانية للتجار.<br><br>
+    🔥 ثانيًا:القسم بياخد 10 مستخدمين فقط كل أسبوع.<br>
+    🛠️  يتم مراجعة الإحصائيات الخاصة بالمستخدمين اسبوعيا ، والمستحدمين الي عملت اقل من 10 تفعيلات في الاسبوع  هيتم طردهم من القسم واستبدالهم بمستخدمين آخري لان ده يعتبر مش تاجر ده مستخدم عادي > <br>
+    ✅ واذا تم طردك يمكنك المشاركة مرة أخرى في الأسبوع التالي.
+</div>
+
+<!-- ✅ زر إنشاء القسيمة -->
+<div class="button-container">
+    <a href="#" onclick="sendToWhatsApp()" class="whatsapp-button">📩 إنشئ القسيمة الخاصة بك</a>
+</div>
+    <!-- ✅ مستطيل الرسائل -->
+    <div id="messageBox" class="message-box hidden"></div>
+
+    <div class="input-container">
+        <input type="text" id="codeInput" placeholder="🔑 أدخل القسيمة هنا">
+        <button onclick="checkAccess()">✅ تحقق</button>
+    </div>
+</body>
+</html>

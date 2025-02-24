@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الطلبات</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>📦 قائمة الطلبات</h2>
+    <div id="ordersContainer"></div>
+
+    <!-- تحميل Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="main.js"></script>
+
+    <script>
+        function loadOrders(userId) {
+            const ordersContainer = document.getElementById("ordersContainer");
+            ordersContainer.innerHTML = "<p>⏳ جاري تحميل الطلبات...</p>";
+
+            db.collection("orders").where("userId", "==", userId).get().then((querySnapshot) => {
+                ordersContainer.innerHTML = "";
+                if (querySnapshot.empty) {
+                    ordersContainer.innerHTML = "<p>🚫 لا يوجد طلبات حالياً.</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    let order = doc.data();
+                    let orderElement = document.createElement("div");
+                    orderElement.innerHTML = `
+                        <h3>🔢 رقم الطلب: ${order.orderId}</h3>
+                        <p>📞 رقم الهاتف: ${order.phoneNumber}</p>
+                        <p>📲 واتساب: ${order.whatsappNumber}</p>
+                        <p>💰 المبلغ المخصوم: <strong>${order.amountDeducted} جنيه</strong></p>
+                        <p>📌 الحالة: <strong>${order.status}</strong></p>
+                        ${order.status === "قابل للإلغاء" ? `<button onclick="cancelOrder(${order.orderId}, ${order.amountDeducted}, '${userId}')">❌ إلغاء الطلب</button>` : ""}
+                        <hr>
+                    `;
+                    ordersContainer.appendChild(orderElement);
+                });
+            });
+        }
+
+        function cancelOrder(orderId, amount, userId) {
+            if (!confirm("هل أنت متأكد من إلغاء الطلب؟")) return;
+
+            const userRef = db.collection("users").doc(userId);
+
+            db.runTransaction((transaction) => {
+                return transaction.get(userRef).then((userDoc) => {
+                    if (!userDoc.exists) throw "المستخدم غير موجود!";
+                    let currentWallet = userDoc.data().wallet || 0;
+                    transaction.update(userRef, { wallet: currentWallet + amount });
+                    return transaction;
+                });
+            }).then(() => {
+                return db.collection("orders").where("orderId", "==", orderId).get().then((querySnapshot) => {
+                    querySnapshot.forEach((doc) => {
+                        doc.ref.delete();
+                    });
+                });
+            }).then(() => {
+                alert(`✅ تم إلغاء الطلب واسترجاع ${amount.toFixed(2)} جنيه إلى محفظتك.`);
+                loadOrders(userId);
+            }).catch(error => {
+                console.error("❌ خطأ أثناء إلغاء الطلب:", error);
+                alert("❌ حدث خطأ أثناء إلغاء الطلب.");
+            });
+        }
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                loadOrders(user.uid);
+            } else {
+                document.getElementById("ordersContainer").innerHTML = "<p>❌ يجب تسجيل الدخول لعرض الطلبات.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
