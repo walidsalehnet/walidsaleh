@@ -22,112 +22,105 @@
             measurementId: "G-VKSGWBRKVL"
         };
 
-        // ✅ تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
     </script>
 
-<style>
-    body {
-        background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
-        font-family: 'Cairo', sans-serif;
-        color: white;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
+    <style>
+        body {
+            background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
+            font-family: 'Cairo', sans-serif;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .container {
-        background: rgba(255, 255, 255, 0.15);
-        padding: 20px;
-        border-radius: 15px;
-        max-width: 450px;
-        width: 90%;
-        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-        text-align: center;
-        margin-bottom: 20px;
-    }
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    select, input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 8px;
-        border: none;
-        font-size: 16px;
-        text-align: center;
-        background: rgba(255, 255, 255, 0.2);
-        color: rgb(255, 0, 0);
-    }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: rgb(255, 0, 0);
+        }
 
-    .button {
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, #4a4a4a, #2e2e2e);
-        border: none;
-        border-radius: 8px;
-        color: rgb(255, 255, 255);
-        font-size: 20px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
-        margin-top: 15px;
-    }
+        .button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4a4a4a, #2e2e2e);
+            border: none;
+            border-radius: 8px;
+            color: rgb(255, 255, 255);
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+        }
 
-    .button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-    }
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
 
-    .message-box {
-        width: 90%;
-        max-width: 450px;
-        padding: 15px;
-        background: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        border-radius: 10px;
-        text-align: center;
-        margin-top: 15px;
-        display: none;
-    }
+        .message-box {
+            width: 90%;
+            max-width: 450px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
 
-    .table-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
+        table {
+            width: 90%;
+            max-width: 600px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+        }
 
-    table {
-        width: 90%;
-        max-width: 600px;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        overflow: hidden;
-        text-align: center;
-    }
+        th, td {
+            padding: 12px;
+            border: 1px solid white;
+            text-align: center;
+        }
 
-    th, td {
-        padding: 12px;
-        border: 1px solid white;
-        text-align: center;
-    }
+        th {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
 
-    th {
-        background: rgba(255, 255, 255, 0.3);
-        font-weight: bold;
-    }
-
-    tr:nth-child(even) {
-        background: rgba(255, 255, 255, 0.1);
-    }
-</style>
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
 </head>
 <body>
 
@@ -165,83 +158,98 @@
         </thead>
         <tbody id="ordersTable"></tbody>
     </table>
-<script>
-    function fetchOrders() {
-        const ordersTable = document.getElementById("ordersTable");
-        ordersTable.innerHTML = "";
 
-        db.collection("requests")
-            .where("type", "==", "شحن")
-            .orderBy("createdAt", "desc")
-            .onSnapshot(snapshot => {
-                ordersTable.innerHTML = "";
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    ordersTable.innerHTML += `
-                        <tr>
-                            <td>${data.orderId}</td>
-                            <td>${data.fromNumber}</td>
-                            <td>${data.toNumber}</td>
-                            <td>${data.amount} جنيه</td>
-                            <td>${data.email}</td>
-                            <td>${data.status || "قيد التنفيذ"}</td>
-                        </tr>
-                    `;
+    <script>
+        function fetchOrders() {
+            const ordersTable = document.getElementById("ordersTable");
+            ordersTable.innerHTML = "";
+
+            db.collection("requests")
+                .where("type", "==", "شحن")
+                .orderBy("createdAt", "desc")
+                .onSnapshot(snapshot => {
+                    ordersTable.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        ordersTable.innerHTML += `
+                            <tr>
+                                <td>${data.orderId}</td>
+                                <td>${data.fromNumber}</td>
+                                <td>${data.toNumber}</td>
+                                <td>${data.amount} جنيه</td>
+                                <td>${data.email}</td>
+                                <td>${data.status || "قيد التنفيذ"}</td>
+                            </tr>
+                        `;
+                    });
                 });
-            });
-    }
+        }
 
-    function submitRecharge() {
-        const fromNumber = document.getElementById("fromNumber").value;
-        const toNumber = document.getElementById("toNumber").value;
-        const amount = document.getElementById("amount").value;
-        const orderId = Math.floor(100000 + Math.random() * 900000);
+        function submitRecharge() {
+            const fromNumber = document.getElementById("fromNumber").value.trim();
+            const toNumber = document.getElementById("toNumber").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+            const orderId = Math.floor(100000 + Math.random() * 900000);
 
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                const orderData = {
-                    orderId: orderId,
-                    fromNumber: fromNumber,
-                    toNumber: toNumber,
-                    amount: parseFloat(amount),
-                    email: user.email,
-                    type: "شحن",
-                    status: "قيد التنفيذ",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                db.collection("requests").doc(orderId.toString()).set(orderData)
-                .then(() => {
-                    showMessage("✅ تم إرسال الطلب بنجاح!", "green");
-                    sendToTelegram(orderId, fromNumber, toNumber, amount, user.email);
-                    fetchOrders();
-                });
+            if (!fromNumber || !toNumber || !amount || isNaN(amount)) {
+                showMessage("❌ يرجى تعبئة جميع الحقول بشكل صحيح", "red");
+                return;
             }
-        });
-    }
 
-    function sendToTelegram(orderId, fromNumber, toNumber, amount, email) {
-        const message = `📢 *طلب شحن جديد* 📢\n\n`
-            + `🆔 *رقم الطلب:* ${orderId}\n`
-            + `📲 *رقم المرسل:* ${fromNumber}\n`
-            + `📞 *رقم المستقبل:* ${toNumber}\n`
-            + `💰 *المبلغ:* ${amount} جنيه\n`
-            + `✉️ *الإيميل:* ${email}`;
+            firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    const email = user.email || "غير معروف";
 
-        fetch(`https://api.telegram.org/bot7712165151:AAHD5VJBls-05EcA6bqWeEX8ZZgmz8VRxCM/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}`)
-            .then(() => showMessage("✅ تم إرسال الطلب إلى تيليجرام!", "green"));
-    }
+                    const orderData = {
+                        orderId: orderId,
+                        fromNumber: fromNumber,
+                        toNumber: toNumber,
+                        amount: amount,
+                        email: email,
+                        type: "شحن",
+                        status: "قيد التنفيذ",
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
 
-    function showMessage(message, color) {
-        const messageBox = document.getElementById("messageBox");
-        messageBox.innerText = message;
-        messageBox.style.background = color;
-        messageBox.style.display = "block";
-        setTimeout(() => { messageBox.style.display = "none"; }, 4000);
-    }
+                    db.collection("requests").doc(orderId.toString()).set(orderData)
+                    .then(() => {
+                        showMessage("✅ تم إرسال الطلب بنجاح!", "green");
+                        sendToTelegram(orderData);
+                        fetchOrders();
+                    })
+                    .catch(error => {
+                        console.error("خطأ أثناء الحفظ:", error);
+                        showMessage("❌ حدث خطأ أثناء إرسال الطلب", "red");
+                    });
+                } else {
+                    showMessage("❌ يجب تسجيل الدخول أولاً", "red");
+                }
+            });
+        }
 
-    document.addEventListener("DOMContentLoaded", fetchOrders);
-</script>
+        function sendToTelegram(data) {
+            const message = `📢 *طلب شحن جديد* 📢\n\n`
+                + `🆔 *رقم الطلب:* ${data.orderId}\n`
+                + `📲 *رقم المرسل:* ${data.fromNumber}\n`
+                + `📞 *رقم المستقبل:* ${data.toNumber}\n`
+                + `💰 *المبلغ:* ${data.amount} جنيه\n`
+                + `✉️ *الإيميل:* ${data.email}`;
+
+            fetch(`https://api.telegram.org/bot7712165151:AAHD5VJBls-05EcA6bqWeEX8ZZgmz8VRxCM/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}`)
+                .then(() => showMessage("✅ تم إرسال الطلب إلى تيليجرام!", "green"))
+                .catch(() => showMessage("⚠️ لم يتم إرسال الطلب إلى تيليجرام", "orange"));
+        }
+
+        function showMessage(message, color) {
+            const box = document.getElementById("messageBox");
+            box.innerText = message;
+            box.style.background = color;
+            box.style.display = "block";
+            setTimeout(() => { box.style.display = "none"; }, 4000);
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchOrders);
+    </script>
 
 </body>
 </html>
