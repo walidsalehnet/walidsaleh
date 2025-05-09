@@ -91,6 +91,35 @@
       margin-top: 15px;
       display: none;
     }
+
+    /* جدول السجلات */
+    .recharge-history-table {
+      width: 100%;
+      margin-top: 40px;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .recharge-history-table th, .recharge-history-table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+      color: white;
+    }
+
+    .recharge-history-table th {
+      background-color: #4a4a4a;
+      font-weight: bold;
+      color: #00bcd4;
+    }
+
+    .recharge-history-table tr:hover {
+      background-color: #333851;
+      transition: background-color 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -114,6 +143,23 @@
   </div>
 
   <div id="messageBox" class="message-box"></div>
+
+  <!-- جدول سجلات الشحن -->
+  <div class="container">
+    <h2>سجل الشحنات</h2>
+    <table class="recharge-history-table">
+      <thead>
+        <tr>
+          <th>رقم المرسل</th>
+          <th>رقم المستقبل</th>
+          <th>رقم الطلب</th>
+          <th>المبلغ</th>
+          <th>حالة الطلب</th>
+        </tr>
+      </thead>
+      <tbody id="rechargeHistory"></tbody>
+    </table>
+  </div>
 
   <script>
     function submitRecharge() {
@@ -146,6 +192,7 @@
           .then(() => {
             showMessage("✅ تم إرسال الطلب بنجاح!", "green");
             sendToTelegram(orderData);
+            loadRechargeHistory(); // تحميل السجلات بعد إضافة الشحن
           })
           .catch(error => {
             console.error("خطأ أثناء الحفظ:", error);
@@ -177,6 +224,34 @@
       box.style.display = "block";
       setTimeout(() => { box.style.display = "none"; }, 4000);
     }
+
+    // تحميل السجلات من Firestore
+    function loadRechargeHistory() {
+      db.collection("requests").where("type", "==", "شحن").orderBy("createdAt", "desc").limit(5)
+        .get()
+        .then(querySnapshot => {
+          const historyTable = document.getElementById("rechargeHistory");
+          historyTable.innerHTML = ""; // مسح البيانات السابقة
+          querySnapshot.forEach(doc => {
+            const data = doc.data();
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${data.senderPhone}</td>
+              <td>${data.receiverPhone}</td>
+              <td>${data.orderId}</td>
+              <td>${data.amount}</td>
+              <td>${data.status}</td>
+            `;
+            historyTable.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error("خطأ أثناء تحميل السجلات:", error);
+        });
+    }
+
+    // تحميل السجلات عند تحميل الصفحة
+    loadRechargeHistory();
   </script>
 </body>
 </html>
