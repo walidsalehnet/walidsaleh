@@ -1,255 +1,182 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💰 شحن رصيد المحفظة</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💰 شحن رصيد المحفظة</title>
 
-    <!-- ✅ تحميل Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <script>
-        // ✅ تكوين Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
-            authDomain: "noproblem-55b97.firebaseapp.com",
-            projectId: "noproblem-55b97",
-            storageBucket: "noproblem-55b97.firebasestorage.app",
-            messagingSenderId: "316010224446",
-            appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
-            measurementId: "G-VKSGWBRKVL"
-        };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+      authDomain: "noproblem-55b97.firebaseapp.com",
+      projectId: "noproblem-55b97",
+      storageBucket: "noproblem-55b97.appspot.com",
+      messagingSenderId: "316010224446",
+      appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-    </script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
+      font-family: 'Cairo', sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #2d2d2d, #3b3b3b);
-            font-family: 'Cairo', sans-serif;
-            color: white;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .container {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.2);
+      color: rgb(255, 255, 255);
+    }
 
-        select, input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.2);
-            color: rgb(255, 0, 0);
-        }
+    .button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4a4a4a, #2e2e2e);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 15px;
+    }
 
-        .button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #4a4a4a, #2e2e2e);
-            border: none;
-            border-radius: 8px;
-            color: rgb(255, 255, 255);
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 15px;
-        }
+    .button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+    }
 
-        .button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
-
-        .message-box {
-            width: 90%;
-            max-width: 450px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-        }
-
-        table {
-            width: 90%;
-            max-width: 600px;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            text-align: center;
-        }
-
-        th, td {
-            padding: 12px;
-            border: 1px solid white;
-            text-align: center;
-        }
-
-        th {
-            background: rgba(255, 255, 255, 0.3);
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background: rgba(255, 255, 255, 0.1);
-        }
-    </style>
+    .message-box {
+      width: 90%;
+      max-width: 450px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>💰 شحن رصيد المحفظة</h1>
+  <div class="container">
+    <h1>💰 شحن رصيد المحفظة</h1>
 
-        <label>📲 رقم المرسل:</label>
-        <input type="tel" id="fromNumber" placeholder="أدخل رقمك الذي أرسلت منه الشحن">
+    <label>📲 رقم المرسل:</label>
+    <input type="tel" id="fromNumber" placeholder="أدخل رقمك الذي أرسلت منه الشحن">
 
-        <label>📞 اختر رقم الكاش للتحويل إليه:</label>
-        <select id="toNumber">
-            <option value="01097891442">01097891442</option>
-            <option value="01091786723">01091786723</option>
-        </select>
+    <label>📞 اختر رقم الكاش للتحويل إليه:</label>
+    <select id="toNumber">
+      <option value="01097891442">01097891442</option>
+      <option value="01091786723">01091786723</option>
+    </select>
 
-        <label>💰 المبلغ:</label>
-        <input type="number" id="amount" placeholder="أدخل المبلغ الذي قمت بتحويله">
+    <label>💰 المبلغ:</label>
+    <input type="number" id="amount" placeholder="أدخل المبلغ الذي قمت بتحويله">
 
-        <button class="button" onclick="submitRecharge()">⚡ تأكيد الشحن</button>
-    </div>
+    <button class="button" onclick="submitRecharge()">⚡ تأكيد الشحن</button>
+  </div>
 
-    <div id="messageBox" class="message-box"></div>
+  <div id="messageBox" class="message-box"></div>
 
-    <h2>📋 سجل عمليات الشحن</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>رقم الطلب</th>
-                <th>رقم المرسل</th>
-                <th>رقم المستقبل</th>
-                <th>المبلغ</th>
-                <th>البريد الإلكتروني</th>
-                <th>الحالة</th>
-            </tr>
-        </thead>
-        <tbody id="ordersTable"></tbody>
-    </table>
+  <script>
+    function submitRecharge() {
+      const fromNumber = document.getElementById("fromNumber").value.trim();
+      const toNumber = document.getElementById("toNumber").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const orderId = Math.floor(100000 + Math.random() * 900000);
 
-    <script>
-        function fetchOrders() {
-            const ordersTable = document.getElementById("ordersTable");
-            ordersTable.innerHTML = "";
+      if (!fromNumber || !toNumber || !amount || isNaN(amount)) {
+        showMessage("❌ يرجى تعبئة جميع الحقول بشكل صحيح", "red");
+        return;
+      }
 
-            db.collection("requests")
-                .where("type", "==", "شحن")
-                .orderBy("createdAt", "desc")
-                .onSnapshot(snapshot => {
-                    ordersTable.innerHTML = "";
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        ordersTable.innerHTML += `
-                            <tr>
-                                <td>${data.orderId}</td>
-                                <td>${data.fromNumber}</td>
-                                <td>${data.toNumber}</td>
-                                <td>${data.amount} جنيه</td>
-                                <td>${data.email}</td>
-                                <td>${data.status || "قيد التنفيذ"}</td>
-                            </tr>
-                        `;
-                    });
-                });
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const email = user.email || "غير معروف";
+
+          const orderData = {
+            orderId: orderId,
+            senderPhone: fromNumber,
+            receiverPhone: toNumber,
+            amount: amount,
+            userEmail: email,
+            type: "شحن",
+            status: "قيد التنفيذ",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+
+          db.collection("requests").doc(orderId.toString()).set(orderData)
+          .then(() => {
+            showMessage("✅ تم إرسال الطلب بنجاح!", "green");
+            sendToTelegram(orderData);
+          })
+          .catch(error => {
+            console.error("خطأ أثناء الحفظ:", error);
+            showMessage("❌ حدث خطأ أثناء إرسال الطلب", "red");
+          });
+        } else {
+          showMessage("❌ يجب تسجيل الدخول أولاً", "red");
         }
+      });
+    }
 
-        function submitRecharge() {
-            const fromNumber = document.getElementById("fromNumber").value.trim();
-            const toNumber = document.getElementById("toNumber").value;
-            const amount = parseFloat(document.getElementById("amount").value);
-            const orderId = Math.floor(100000 + Math.random() * 900000);
+    function sendToTelegram(data) {
+      const message = `📢 *طلب شحن جديد* 📢\n\n`
+        + `🆔 *رقم الطلب:* ${data.orderId}\n`
+        + `📲 *رقم المرسل:* ${data.senderPhone}\n`
+        + `📞 *رقم المستقبل:* ${data.receiverPhone}\n`
+        + `💰 *المبلغ:* ${data.amount} جنيه\n`
+        + `✉️ *الإيميل:* ${data.userEmail}`;
 
-            if (!fromNumber || !toNumber || !amount || isNaN(amount)) {
-                showMessage("❌ يرجى تعبئة جميع الحقول بشكل صحيح", "red");
-                return;
-            }
+      fetch(`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage?chat_id=<YOUR_CHAT_ID>&text=${encodeURIComponent(message)}`)
+        .then(() => showMessage("✅ تم إرسال الطلب إلى تيليجرام!", "green"))
+        .catch(() => showMessage("⚠️ لم يتم إرسال الطلب إلى تيليجرام", "orange"));
+    }
 
-            firebase.auth().onAuthStateChanged(user => {
-                if (user) {
-                    const email = user.email || "غير معروف";
-
-                    const orderData = {
-                        orderId: orderId,
-                        fromNumber: fromNumber,
-                        toNumber: toNumber,
-                        amount: amount,
-                        email: email,
-                        type: "شحن",
-                        status: "قيد التنفيذ",
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    db.collection("requests").doc(orderId.toString()).set(orderData)
-                    .then(() => {
-                        showMessage("✅ تم إرسال الطلب بنجاح!", "green");
-                        sendToTelegram(orderData);
-                        fetchOrders();
-                    })
-                    .catch(error => {
-                        console.error("خطأ أثناء الحفظ:", error);
-                        showMessage("❌ حدث خطأ أثناء إرسال الطلب", "red");
-                    });
-                } else {
-                    showMessage("❌ يجب تسجيل الدخول أولاً", "red");
-                }
-            });
-        }
-
-        function sendToTelegram(data) {
-            const message = `📢 *طلب شحن جديد* 📢\n\n`
-                + `🆔 *رقم الطلب:* ${data.orderId}\n`
-                + `📲 *رقم المرسل:* ${data.fromNumber}\n`
-                + `📞 *رقم المستقبل:* ${data.toNumber}\n`
-                + `💰 *المبلغ:* ${data.amount} جنيه\n`
-                + `✉️ *الإيميل:* ${data.email}`;
-
-            fetch(`https://api.telegram.org/bot7712165151:AAHD5VJBls-05EcA6bqWeEX8ZZgmz8VRxCM/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}`)
-                .then(() => showMessage("✅ تم إرسال الطلب إلى تيليجرام!", "green"))
-                .catch(() => showMessage("⚠️ لم يتم إرسال الطلب إلى تيليجرام", "orange"));
-        }
-
-        function showMessage(message, color) {
-            const box = document.getElementById("messageBox");
-            box.innerText = message;
-            box.style.background = color;
-            box.style.display = "block";
-            setTimeout(() => { box.style.display = "none"; }, 4000);
-        }
-
-        document.addEventListener("DOMContentLoaded", fetchOrders);
-    </script>
-
+    function showMessage(message, color) {
+      const box = document.getElementById("messageBox");
+      box.innerText = message;
+      box.style.background = color;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 4000);
+    }
+  </script>
 </body>
 </html>
