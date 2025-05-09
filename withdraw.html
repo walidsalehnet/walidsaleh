@@ -145,6 +145,7 @@
                 <th>رقم الواتساب</th>
                 <th>المبلغ</th>
                 <th>الحالة</th>
+                <th>الإيميل</th>
             </tr>
         </thead>
         <tbody id="ordersTable"></tbody>
@@ -169,6 +170,7 @@
                             <td>${data.whatsappNumber}</td>
                             <td>${data.amount} جنيه</td>
                             <td>${data.status || "قيد التنفيذ"}</td>
+                            <td>${data.userEmail}</td>
                         </tr>
                     `;
                 });
