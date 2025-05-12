@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
@@ -34,11 +34,7 @@
       const userRef = doc(db, "users", phone);
       const userSnap = await getDoc(userRef);
 
-      if (!userSnap.exists()) {
-        Swal.fire("❌ خطأ", "رقم الهاتف غير مسجل", "error");
-        return;
-      }
-
+    
       const userData = userSnap.data();
       const currentBalance = userData.balance || 0;
 
