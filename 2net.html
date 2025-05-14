@@ -87,7 +87,7 @@
       }
 
       const deadline = new Date();
-      deadline.setHours(0, 0, 0, 0); // 5 مساءً
+      deadline.setHours(12, 0, 0, 0); // 5 مساءً
       if (new Date() > deadline) {
         Swal.fire("⛔", "انتهى الحجز", "error");
         return;
