@@ -1,184 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WEDOO NET - باقات فليكس</title>
-
-    <!-- ✅ تحميل الخطوط والأيقونات -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        /* ✅ إعدادات الصفحة العامة */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ✅ أنيميشن اسم الموقع */
-        .logo {
-            font-size: clamp(30px, 5vw, 50px);
-            font-weight: bold;
-            text-transform: uppercase;
-            opacity: 0;
-            animation: fadeIn 1.5s ease-out forwards, glow 2s infinite alternate;
-            background: linear-gradient(45deg, #ff512f, #dd2476);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px rgba(255, 81, 47, 0.8);
-            }
-            to {
-                text-shadow: 0 0 20px rgba(221, 36, 118, 0.9);
-            }
-        }
-
-        /* ✅ تنسيق الباقات */
-        .plans {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            width: 90%;
-            max-width: 1000px;
-        }
-
-        .plan {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        .plan:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.3);
-        }
-
-        .plan h2 {
-            font-size: clamp(20px, 2vw, 24px);
-            margin-bottom: 10px;
-        }
-
-        .plan p {
-            font-size: clamp(14px, 1.5vw, 16px);
-            margin: 5px 0;
-            opacity: 0.9;
-        }
-
-        /* ✅ زر الاشتراك */
-        .plan button {
-            background: linear-gradient(45deg, #ff512f, #dd2476);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: clamp(14px, 1.5vw, 16px);
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .plan button:hover {
-            transform: scale(1.08);
-            box-shadow: 0 4px 15px rgba(255, 81, 47, 0.6);
-        }
-
-        /* ✅ تحسين التناسق مع الشاشات الصغيرة */
-        @media (max-width: 600px) {
-            .plans {
-                grid-template-columns: 1fr;
-            }
-            .logo {
-                font-size: 40px;
-            }
-            .plan h2 {
-                font-size: 18px;
-            }
-            .plan button {
-                font-size: 14px;
-                padding: 10px 18px;
-            }
-        }
-
-    </style>
-</head>
-<body>
-
-    <!-- ✅ اسم الموقع بانميشن -->
-    <div class="logo">WEDOO NET</div>
-
-    <!-- ✅ الباقات -->
-    <div class="plans">
-        <div class="plan">
-            <h2>2600 فليكس</h2>
-            <p>💰 السعر: 50 جنيه</p>
-            <p>📜 الشروط:</p>
-            <p>- الخط عادي (ليس بيزنس)</p>
-            <p>- لا توجد باقات على النوته أو سلف</p>
-            <p>- الرقم ليس في عائلة أخرى</p>
-            <p>⏳ مدة الباقة: 28 يوم</p>
-            <button onclick="location.href='1flex2.html'">اشتراك</button>
-        </div>
-
-        <div class="plan">
-            <h2>5200 فليكس</h2>
-            <p>💰 السعر: 90 جنيه</p>
-            <p>📜 الشروط:</p>
-            <p>- الخط عادي (ليس بيزنس)</p>
-            <p>- لا توجد باقات على النوته أو سلف</p>
-            <p>- الرقم ليس في عائلة أخرى</p>
-            <p>⏳ مدة الباقة: 28 يوم</p>
-            <button onclick="location.href='2flex2.html'">اشتراك</button>
-        </div>
-
-        <div class="plan">
-            <h2>10400 فليكس</h2>
-            <p>💰 السعر: 170 جنيه</p>
-            <p>📜 الشروط:</p>
-            <p>- الخط عادي (ليس بيزنس)</p>
-            <p>- لا توجد باقات على النوته أو سلف</p>
-            <p>- الرقم ليس في عائلة أخرى</p>
-            <p>⏳ مدة الباقة: 28 يوم</p>
-            <button onclick="location.href='3flex2.html'">اشتراك</button>
-        </div>
-
-        <div class="plan">
-            <h2>13000 فليكس</h2>
-            <p>💰 السعر: 220 جنيه</p>
-            <p>📜 الشروط:</p>
-            <p>- الخط عادي (ليس بيزنس)</p>
-            <p>- لا توجد باقات على النوته أو سلف</p>
-            <p>- الرقم ليس في عائلة أخرى</p>
-            <p>- ✅ نظام خطك هيبقى 260 وتقدر تضيف معاك أفراد</p>
-            <p>⏳ مدة الباقة: 28 يوم</p>
-            <button onclick="location.href='4flex2.html'">اشتراك</button>
-        </div>
-    </div>
-
-</body>
-</html>
