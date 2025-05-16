@@ -1,14 +1,22 @@
-/* ✅ تحسين الألوان وجعل التصميم أكثر جاذبية */
+/* ✅ خلفية متدرجة متحركة */
 body {
     font-family: 'Cairo', sans-serif;
-    background: linear-gradient(135deg, #2d2d2d, #3b3b3b); /* ✅ خلفية رمادية هادئة */
+    background: linear-gradient(135deg, #e60000, #ff6600, #00b14f, #6320ee);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
     color: #ffffff;
     margin: 0;
     padding: 0;
     text-align: center;
 }
 
-/* ✅ تأثيرات دخول سلسة */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ✅ تأثير دخول سلس */
 @keyframes slideIn {
     from {
         transform: translateY(-50px);
@@ -20,39 +28,39 @@ body {
     }
 }
 
-/* ✅ تصميم الحاوية بشكل أنيق */
 .container {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     max-width: 400px;
     width: 90%;
-    margin: 20px auto;
+    margin: 30px auto;
     text-align: center;
-    backdrop-filter: blur(15px);
-    animation: slideIn 0.5s ease forwards;
+    backdrop-filter: blur(20px);
+    animation: slideIn 0.6s ease forwards;
 }
 
-/* ✅ تحسين مظهر العناوين */
+/* ✅ عناوين أنيقة */
 h1 {
-    color: #ffcc00;
+    color: #fff;
     margin-bottom: 20px;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
     animation: fadeIn 1s ease forwards;
 }
 
-/* ✅ تحسين الحقول */
+/* ✅ الحقول */
 input[type="text"], input[type="email"], input[type="password"] {
     width: 100%;
     padding: 12px;
     margin: 12px 0;
-    border: 1px solid #ffcc00;
+    border: 1px solid #fff;
     border-radius: 25px;
     background: rgba(255, 255, 255, 0.9);
     font-size: 16px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 input:focus {
@@ -61,7 +69,7 @@ input:focus {
     transform: scale(1.02);
 }
 
-/* ✅ تحسين الأزرار */
+/* ✅ زر رئيسي */
 button {
     width: 100%;
     padding: 14px;
@@ -73,30 +81,34 @@ button {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
 }
 
 button:hover {
     background: linear-gradient(135deg, #ff8800, #ffdd44);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     transform: translateY(-3px);
 }
 
-/* ✅ تصغير حجم زر "لدي حساب" و "ليس لدي حساب" مع إضافة تباعد */
+/* ✅ زر صغير */
 .small-button {
-    width: 80%; /* ✅ تصغير الحجم */
+    width: 80%;
     font-size: 14px;
     padding: 10px;
-    background: linear-gradient(135deg, #444, #666);
+    background: linear-gradient(135deg, #333, #555);
+    border: none;
+    border-radius: 25px;
+    color: #fff;
     margin-top: 8px;
+    transition: all 0.3s ease;
 }
 
 .small-button:hover {
-    background: linear-gradient(135deg, #555, #777);
+    background: linear-gradient(135deg, #444, #666);
 }
 
-/* ✅ تحسين الروابط */
+/* ✅ الروابط */
 a {
     color: #ffcc00;
     text-decoration: none;
@@ -108,18 +120,20 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ✅ تنسيق الرسائل المنبثقة */
+/* ✅ رسائل منبثقة */
 .message-popup {
     background-color: rgba(0, 0, 0, 0.7);
     color: #ffcc00;
     border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
 }
+
 .message-popup.success { background-color: #28a745; }
 .message-popup.error { background-color: #dc3545; }
 .message-popup.warning { background-color: #ffc107; color: black; }
 .message-popup.info { background-color: #17a2b8; }
 
-/* ✅ تحسين زر الإغلاق */
 .close-btn:hover {
     color: #ffcc00;
 }
